@@ -24,7 +24,7 @@ public class process {
 	}
 
 	public List<Employee> getAllEmployees() throws SQLException {
-		String sql = "SELECT * FROM employee_info";
+		String sql = "SELECT * FROM employees_info";
 		try (Connection c = DriverManager.getConnection(DataBaseURL, USER,
 				PASSWORD);
 				PreparedStatement ps = c.prepareStatement(sql);

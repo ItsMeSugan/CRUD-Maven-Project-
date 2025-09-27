@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-
 <%@ page import="DAO.process, java.util.*"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
@@ -33,6 +32,12 @@ request.setAttribute("ids", ids);
 		Age: <input name="Age" type="number"><br>
 		Join Date:<input name="Join_Date" type="date"><br>
 		<button type="submit">Insert</button>
+	</form>
+	
+		<!-- List -->
+	<h2>List Employees</h2>
+	<form method="get" action="show.jsp">
+		<button type="submit">Show All Employees</button>
 	</form>
 
 </body>
