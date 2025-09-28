@@ -1,19 +1,14 @@
 package DAO;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import Model.Employee;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class process {
-
-	private static final String DataBaseURL = "jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC";
-	private static final String USER = "root";
-	private static final String PASSWORD = "Suganjana@1405";
 
 	static {
 		try {
@@ -24,11 +19,12 @@ public class process {
 	}
 
 	public List<Employee> getAllEmployees() throws SQLException {
-		String sql = "SELECT * FROM employees_info";
-		try (Connection c = DriverManager.getConnection(DataBaseURL, USER,
-				PASSWORD);
-				PreparedStatement ps = c.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
+		String sql = "SELECT * FROM Employees_Info";
+		try (Connection c = DriverManager.getConnection(
+				"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+				"root", "Suganjana@1405");
+				PreparedStatement p = c.prepareStatement(sql);
+				ResultSet rs = p.executeQuery()) {
 			List<Employee> list = new ArrayList<>();
 			while (rs.next()) {
 				Employee e = new Employee();
@@ -45,13 +41,12 @@ public class process {
 	}
 
 	public List<Integer> getAllIds() throws SQLException {
-
-		String sql = "SELECT Id FROM employees_info";
-		try (Connection c = DriverManager.getConnection(DataBaseURL, USER,
-				PASSWORD);
-				PreparedStatement ps = c.prepareStatement(sql);
-				ResultSet rs = ps.executeQuery()) {
-
+		String sql = "SELECT Id FROM Employees_Info";
+		try (Connection c = DriverManager.getConnection(
+				"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+				"root", "Suganjana@1405");
+				PreparedStatement p = c.prepareStatement(sql);
+				ResultSet rs = p.executeQuery()) {
 			List<Integer> ids = new ArrayList<>();
 			while (rs.next())
 				ids.add(rs.getInt("Id"));
@@ -60,16 +55,126 @@ public class process {
 	}
 
 	public void insertEmployee(Employee e) throws SQLException {
-
-		String sql = "INSERT INTO employees_info (first_Name, last_Name, phone_Number, Age, Join_Date) value(?,?,?,?,?)";
-		try(Connection c = DriverManager.getConnection(DataBaseURL, USER, PASSWORD);
-				PreparedStatement ps = c.prepareStatement(sql)){
-			ps.setString(1, e.getFirstName());
-			ps.setString(2, e.getLastName());
-			ps.setString(3, e.getPhoneNumber());
-			ps.setInt(4, e.getAge());
-			ps.setDate(5, e.getJoinDate());
-			ps.executeUpdate();
+		String sql = "INSERT INTO Employees_Info (first_Name, last_Name, phone_Number, Age, Join_Date) VALUES (?,?,?,?,?)";
+		try (Connection c = DriverManager.getConnection(
+				"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+				"root", "Suganjana@1405");
+				PreparedStatement p = c.prepareStatement(sql)) {
+			p.setString(1, e.getFirstName());
+			p.setString(2, e.getLastName());
+			p.setString(3, e.getPhoneNumber());
+			p.setInt(4, e.getAge());
+			p.setDate(5, e.getJoinDate());
+			p.executeUpdate();
 		}
 	}
-}
+
+	public void deleteById(int id) throws SQLException {
+		String sql = "DELETE FROM Employees_Info WHERE Id = ?";
+		try (Connection c = DriverManager.getConnection(
+				"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+				"root", "Suganjana@1405");
+				PreparedStatement p = c.prepareStatement(sql)) {
+			p.setInt(1, id);
+			p.executeUpdate();
+		}
+	}
+
+	/*public int updateById(int id, Employee updates) throws SQLException {
+	    // Start with base SQL
+	    String sql = "UPDATE Employees_Info SET ";
+	    List<String> columns = new ArrayList<>();
+	    List<Object> values = new ArrayList<>();
+
+	    // Collect only fields that have values
+	    if (updates.getFirstName() != null) {
+	        columns.add("first_Name=?");
+	        values.add(updates.getFirstName());
+	    }
+	    if (updates.getLastName() != null) {
+	        columns.add("last_Name=?");
+	        values.add(updates.getLastName());
+	    }
+	    if (updates.getPhoneNumber() != null) {
+	        columns.add("phone_Number=?");
+	        values.add(updates.getPhoneNumber());
+	    }
+	    if (updates.getAge() != 0) {  // ⚠️ Better to use Integer instead of int
+	        columns.add("Age=?");
+	        values.add(updates.getAge());
+	    }
+	    if (updates.getJoinDate() != null) {
+	        columns.add("Join_Date=?");
+	        values.add(updates.getJoinDate());
+	    }
+
+	    // If nothing to update, just exit
+	    if (columns.isEmpty()) {
+	        return 0;
+	    }
+
+	    // Build the SQL string like "UPDATE Employees_Info SET col1=?, col2=? WHERE Id=?"
+	    sql += String.join(", ", columns) + " WHERE Id=?";
+	    values.add(id); // last parameter is always the id
+
+	    // Now execute
+	    try (Connection conn = DriverManager.getConnection(
+	                "jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+	                "root", "Suganjana@1405");
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+	        // Fill the ? placeholders with actual values
+	        for (int i = 0; i < values.size(); i++) {
+	            stmt.setObject(i + 1, values.get(i));
+	        }
+
+	        // Execute update and return how many rows got updated
+	        return stmt.executeUpdate();
+	    }*/
+	    
+	    public void updateById(int id, Employee updates) throws SQLException {
+			// Build dynamic update based on non-null / non-zero fields in 'updates'
+			StringBuilder sb = new StringBuilder("UPDATE Employees_Info SET ");
+			List<Object> params = new ArrayList<>();
+			if (updates.getFirstName() != null) {
+				sb.append("first_Name=?,");
+				params.add(updates.getFirstName());
+			}
+			if (updates.getLastName() != null) {
+				sb.append("last_Name=?,");
+				params.add(updates.getLastName());
+			}
+			if (updates.getPhoneNumber() != null) {
+				sb.append("phone_Number=?,");
+				params.add(updates.getPhoneNumber());
+			}
+			if (updates.getAge() != 0) {
+				sb.append("Age=?,");
+				params.add(updates.getAge());
+			}
+			if (updates.getJoinDate() != null) {
+				sb.append("Join_Date=?,");
+				params.add(updates.getJoinDate());
+			}
+
+			if (params.isEmpty())
+				return; // nothing to update
+
+			// remove trailing comma
+			sb.setLength(sb.length() - 1);
+			sb.append(" WHERE Id=?");
+			params.add(id);
+
+			try (Connection c = DriverManager.getConnection(
+					"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
+					"root", "Suganjana@1405");
+					PreparedStatement p = c.prepareStatement(sb.toString())) {
+				for (int i = 0; i < params.size(); i++) {
+					p.setObject(i + 1, params.get(i));
+				}
+				p.executeUpdate();
+			}
+		}
+
+	}
+
