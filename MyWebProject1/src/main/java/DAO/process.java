@@ -80,7 +80,7 @@ public class process {
 		}
 	}
 
-	/*public int updateById(int id, Employee updates) throws SQLException {
+	public int updateById(int id, Employee updates) throws SQLException {
 	    // Start with base SQL
 	    String sql = "UPDATE Employees_Info SET ";
 	    List<String> columns = new ArrayList<>();
@@ -130,51 +130,7 @@ public class process {
 
 	        // Execute update and return how many rows got updated
 	        return stmt.executeUpdate();
-	    }*/
-	    
-	    public void updateById(int id, Employee updates) throws SQLException {
-			// Build dynamic update based on non-null / non-zero fields in 'updates'
-			StringBuilder sb = new StringBuilder("UPDATE Employees_Info SET ");
-			List<Object> params = new ArrayList<>();
-			if (updates.getFirstName() != null) {
-				sb.append("first_Name=?,");
-				params.add(updates.getFirstName());
-			}
-			if (updates.getLastName() != null) {
-				sb.append("last_Name=?,");
-				params.add(updates.getLastName());
-			}
-			if (updates.getPhoneNumber() != null) {
-				sb.append("phone_Number=?,");
-				params.add(updates.getPhoneNumber());
-			}
-			if (updates.getAge() != 0) {
-				sb.append("Age=?,");
-				params.add(updates.getAge());
-			}
-			if (updates.getJoinDate() != null) {
-				sb.append("Join_Date=?,");
-				params.add(updates.getJoinDate());
-			}
-
-			if (params.isEmpty())
-				return; // nothing to update
-
-			// remove trailing comma
-			sb.setLength(sb.length() - 1);
-			sb.append(" WHERE Id=?");
-			params.add(id);
-
-			try (Connection c = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/employee_db?useSSL=false&serverTimezone=UTC",
-					"root", "Suganjana@1405");
-					PreparedStatement p = c.prepareStatement(sb.toString())) {
-				for (int i = 0; i < params.size(); i++) {
-					p.setObject(i + 1, params.get(i));
-				}
-				p.executeUpdate();
-			}
-		}
+	    }
 
 	}
-
+}
